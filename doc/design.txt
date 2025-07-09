@@ -1,24 +1,19 @@
-
-
-## High-Level Architectural Design
-
+4. High-Level Architecture
+--------------------------
 The Customer Compass application is designed as a cloud-native, serverless web application running entirely on Google Cloud. The architecture is split into three main components: a React-based frontend, a Python Flask backend, and a serverless intelligence pipeline.
 
-### Frontend
-
+**Frontend:**
 *   **Framework:** React with React Router for navigation.
 *   **Hosting:** Deployed as a containerized application on Cloud Run.
 *   **Authentication:** Secured using Identity-Aware Proxy (IAP) to ensure only authorized users can access the application.
 
-### Backend
-
+**Backend:**
 *   **Framework:** Python with Flask, providing a RESTful API for the frontend.
 *   **Hosting:** Deployed as a containerized application on Cloud Run.
 *   **Database:** Cloud SQL for PostgreSQL to store monitor configurations, reports, and other application data.
 *   **Communication:** The backend communicates with the database through a secure VPC connection using the Cloud SQL Python Connector.
 
-### Intelligence Pipeline
-
+**Intelligence Pipeline:**
 *   **Orchestration:** A combination of Cloud Scheduler and Pub/Sub to trigger scheduled report generation.
 *   **Core Logic:** A Cloud Function, written in Python, that is triggered by Pub/Sub messages. This function is responsible for:
     *   Fetching data from the Google Custom Search API.
