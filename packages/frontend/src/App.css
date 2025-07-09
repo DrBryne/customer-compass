@@ -1,0 +1,70 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+}
+
+main {
+  padding: 20px;
+}
+
+.main-content {
+  display: flex;
+  text-align: left;
+}
+
+.monitor-list {
+  width: 25%;
+  border-right: 1px solid #ddd;
+  padding-right: 20px;
+}
+
+.monitor-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.monitor-list li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.monitor-list li.active {
+  background-color: #eee;
+}
+
+.report-display {
+  width: 75%;
+  padding-left: 20px;
+}
+
+.report-container {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.report-content {
+  margin-top: 20px;
+}
+
+.sources {
+  margin-top: 20px;
+}
+
+.sources ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sources li {
+  margin-bottom: 10px;
+}
+
+.error {
+  color: red;
+}

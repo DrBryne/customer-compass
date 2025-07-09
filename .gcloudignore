@@ -1,0 +1,22 @@
+# This file tells the gcloud CLI to ignore specific files and directories.
+# For more information, run: gcloud topic gcloudignore
+
+# Node.js dependencies, which should be installed during the build.
+node_modules/
+
+# Frontend build output, generated in the container.
+packages/frontend/build/
+
+# Python bytecode and caches.
+__pycache__/
+*.pyc
+
+# Local environment files.
+packages/backend/.env
+
+# Git directory.
+.git/
+
+# IDE and OS-specific files.
+.vscode/
+.DS_Store

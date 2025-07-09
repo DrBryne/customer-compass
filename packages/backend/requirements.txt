@@ -1,0 +1,14 @@
+Flask
+gunicorn
+google-auth
+google-auth-oauthlib
+cloud-sql-python-connector[pg8000]
+psycopg2-binary
+python-dotenv
+google-api-python-client
+google-cloud-aiplatform
+beautifulsoup4
+requests
+sendgrid
+google-cloud-scheduler
+google-cloud-pubsub
