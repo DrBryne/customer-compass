@@ -1,0 +1,82 @@
+===================================================
+Project Design Document: Customer Compass
+===================================================
+Version: 2.0
+Last Updated: July 10, 2025
+Status: Final Design
+
+1. Executive Summary
+--------------------
+Project "Customer Compass" is a web-based intelligence tool designed to empower Google Cloud sales professionals. It provides proactive, curated, and timely public information about their customers. By specifying organizations and areas of interest (e.g., AI strategy, cloud adoption, financial health), salespeople receive AI-generated summaries with pinpoint, statement-level citations. The platform supports both on-demand searches and scheduled email subscriptions, ensuring the sales team is always equipped with the latest, most relevant customer insights. The entire solution is designed to be secure, scalable, and run exclusively on Google Cloud.
+
+2. Data Flow & Logic
+--------------------
+The system operates based on two primary workflows: an on-demand search and a scheduled search.
+
+Workflow 1: On-Demand Search
+User Interaction: A salesperson logs into the web app, defines a new "Monitor" by specifying:
+Organizations: "Acme Corp," "Global Tech Inc."
+Areas of Interest: "AI adoption, sustainability initiatives, Q2 financial results."
+Recency: "Last 14 days."
+API Request: The frontend sends this configuration to the backend API on Cloud Run.
+Initiate Processing: The backend directly invokes the intelligence pipeline.
+Information Gathering:
+The pipeline uses the Google Custom Search JSON API to perform targeted queries. Example queries could be:
+"Acme Corp" "AI adoption" after:YYYY-MM-DD
+"Global Tech Inc." "sustainability report" after:YYYY-MM-DD
+
+For each search result (URL), a separate function scrapes the primary text content from the page. All results are aggregated.
+AI Summarization & Citation Engine (Vertex AI): This is the crucial step. The aggregated text content is passed to the Gemini 1.5 Pro model with a meticulously crafted prompt.
+
+Example Prompt Structure:
+
+CONTEXT:
+You are a sales intelligence analyst for Google Cloud. Your task is to summarize the following articles based on the user's areas of interest. For EVERY statement you make, you MUST provide a citation in the format [Source N], where N is the number of the source article. Do not invent any information.
+
+AREAS OF INTEREST:
+- AI adoption
+- Sustainability initiatives
+- Q2 financial results
+
+SOURCE ARTICLES:
+[Source 1: https://www.examplenews.com/acme-q2-results]
+{Full text of article 1...}
+---
+[Source 2: https://www.techblog.com/acme-ai-platform]
+{Full text of article 2...}
+---
+[Source 3: https://www.green.org/global-tech-sustainability]
+{Full text of article 3...}
+
+SUMMARY:
+AI Response Processing: The Gemini model will return a structured summary.
+Example AI Output: "Acme Corp reported a 15% increase in quarterly revenue, driven by their new cloud division [Source 1]. The company also announced the launch of its 'Acme AI' platform, which aims to democratize machine learning for its customers [Source 2]. In parallel, Global Tech Inc. has pledged to be carbon neutral by 2030, detailing new investments in renewable energy [Source 3]."
+
+Store & Display: The backend parses this response, stores the summary and the source-to-URL mapping in the Cloud SQL database, and returns the formatted result to the frontend for immediate display.
+
+Workflow 2: Scheduled Search & Email
+User Subscription: The user creates a "Monitor" as above but also specifies a schedule (e.g., "Weekly on Mondays") and opts-in for email notifications. This schedule is saved as a Cloud Scheduler job.
+Scheduled Trigger: At the specified time, Cloud Scheduler publishes a message to a Pub/Sub topic. The message payload contains the ID of the "Monitor" to be executed.
+Pipeline Execution: A Cloud Function, subscribed to this topic, is triggered. It retrieves the "Monitor" configuration from Cloud SQL.
+Processing: The same information gathering and AI summarization steps (4-6 from the on-demand flow) are executed.
+Store & Notify:
+The new summary is stored in Cloud SQL.
+The orchestrator function then calls another Cloud Function. This function formats the summary into a clean HTML email and uses a service like SendGrid to send it to the subscribed user. The email contains the summary and links back to the full report within the web application.
+
+3. User Interface & Experience (UI/UX) Concepts
+-----------------------------------------------
+Dashboard: Upon logging in, the user sees a dashboard of their existing "Monitors." Each card shows the organization, key interests, and the timestamp of the last run, with a "View Latest" button.
+
+Create/Edit Monitor Page: A user-friendly form to:
+Add/remove organizations.
+Add/remove areas of interest (using a tag-based input field).
+Set the recency period with a slider or dropdown (e.g., 7, 14, 30, 90 days).
+Configure the email subscription schedule using simple presets (Daily, Weekly, Monthly) or a custom cron input.
+Results Page:
+Displays the organization name and the date range of the search.
+Presents the summary in a clean, readable format.
+Each citation [Source N] is an interactive, clickable link. Clicking it could reveal a tooltip with the source article's title and URL, or directly open the link in a new tab.
+A "Sources" section at the bottom lists all referenced articles.
+
+
+
