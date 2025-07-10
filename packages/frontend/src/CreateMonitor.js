@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { TagInput } from '@eidellev/react-tag-input';
+import '@eidellev/react-tag-input/dist/index.css';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
 function CreateMonitor() {
   const [name, setName] = useState('');
-  const [organizations, setOrganizations] = useState('');
-  const [areasOfInterest, setAreasOfInterest] = useState('');
+  const [organizations, setOrganizations] = useState([]);
+  const [areasOfInterest, setAreasOfInterest] = useState([]);
   const [recencyDays, setRecencyDays] = useState(14);
   const [schedule, setSchedule] = useState('weekly');
   const navigate = useNavigate();
@@ -14,8 +18,8 @@ function CreateMonitor() {
     event.preventDefault();
     const data = {
       name,
-      organizations: organizations.split(',').map(s => s.trim()),
-      areas_of_interest: areasOfInterest.split(',').map(s => s.trim()),
+      organizations: organizations.map(org => org.value),
+      areas_of_interest: areasOfInterest.map(area => area.value),
       recency_days: recencyDays,
       schedule,
     };
@@ -36,16 +40,23 @@ function CreateMonitor() {
         <input type="text" value={name} onChange={e => setName(e.target.value)} />
       </label>
       <label>
-        Organizations (comma-separated):
-        <input type="text" value={organizations} onChange={e => setOrganizations(e.target.value)} />
+        Organizations:
+        <TagInput
+          tags={organizations}
+          onTagsChanged={setOrganizations}
+        />
       </label>
       <label>
-        Areas of Interest (comma-separated):
-        <input type="text" value={areasOfInterest} onChange={e => setAreasOfInterest(e.target.value)} />
+        Areas of Interest:
+        <TagInput
+          tags={areasOfInterest}
+          onTagsChanged={setAreasOfInterest}
+        />
       </label>
       <label>
         Recency (days):
-        <input type="number" value={recencyDays} onChange={e => setRecencyDays(parseInt(e.target.value, 10))} />
+        <Slider min={1} max={90} value={recencyDays} onChange={setRecencyDays} />
+        <span>{recencyDays}</span>
       </label>
       <label>
         Schedule:

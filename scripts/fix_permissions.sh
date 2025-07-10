@@ -28,15 +28,17 @@ RUN_SA="service-${PROJECT_NUMBER}@gcp-sa-run.iam.gserviceaccount.com"
 echo "Granting permissions to Cloud Build Service Account (${CLOUD_BUILD_SA})..."
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:${CLOUD_BUILD_SA}" --role="roles/run.admin"
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:${CLOUD_BUILD_SA}" --role="roles/iam.serviceAccountUser"
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:${CLOUD_BUILD_SA}" --role="roles/artifactregistry.writer"
+
+# --- FIX: Grant Storage Object Admin role for GCR access ---
+echo "Granting permissions to push to Google Container Registry..."
+gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:${CLOUD_BUILD_SA}" --role="roles/storage.objectAdmin"
+
 
 echo "Granting permissions to Compute Default Service Account (${COMPUTE_SA})..."
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:${COMPUTE_SA}" --role="roles/storage.objectViewer"
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:${COMPUTE_SA}" --role="roles/logging.logWriter"
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:${COMPUTE_SA}" --role="roles/artifactregistry.writer"
 
-echo "Granting permissions to Cloud Run Service Agent (${RUN_SA})..."
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:${RUN_SA}" --role="roles/compute.networkUser"
+
 
 echo "Granting permissions to User Account (${USER_ACCOUNT})..."
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="user:${USER_ACCOUNT}" --role="roles/logging.viewer"
